@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+<head>
+  <link href="css/styles.css" rel="stylesheet">
+  <script type="text/javascript">
+    window.$ = window.jQuery = require("jquery");
+    window.Handlebars = require('handlebars');
+  </script>
+  <script src="js/bootstrap.js"></script>
+  <style>
+    #message-display {
+      height: 500px;
+      overflow: scroll;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#"><i class="fa fa-envelope-o fa-2x"></i>&nbsp; ENVELOPE</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a onclick="refreshPeople();" href="#"><i class="fa fa-refresh"></i>&nbsp; Refresh</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <br>
+  <div class="row">
+    <div class="col-sm-3">
+      <ul id="peoples" class="list-group">
+      </ul>
+    </div>
+    <div class="col-sm-7 col-sm-offset-1">
+      <!-- Start of Correspondence -->
+      <div id="message-display">
+        <div class="tab-content">
+        </div>
+      </div>
+      <hr />
+      <!-- End of Correspondence -->
+      <form id="msg-form" class="form">
+        <div class="form-group hide">
+          <label>To</label>
+          <select id="to" class="form-control input-lg">
+            <option value="+17138259910">Greg</option>
+            <option value="+17136259910">Pam</option>
+            <option value="+1713501l9910">Mark</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <input id="msg" type="text" class="form-control input-lg" />
+          <div class="input-group-btn">
+            <button type="submit" class="btn btn-primary btn-lg">Send</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script id="message-template" type="text/x-handlebars-template">
+    <div id="{{id}}" class="row">
+      <blockquote class="{{#if isPapa}}blockquote{{else}}blockquote-reverse{{/if}}">
+        <p>{{msg}}</p>
+        <small>{{sender}}</small>
+      </blockquote>
+    </div>
+  </script>
+
+  <script id="tab-template" type="text/x-handlebars-template">
+    <li class="list-group-item" data-phone="{{phone}}">
+      <h1 href="#{{name}}" data-toggle="tab" class="list-group-item-heading">{{name}}</h1>
+    </li>
+  </script>
+
+  <script type="text/javascript">
+    var url = "https://papabob.herokuapp.com";
+    //var url = "http://localhost:8080";
+    
+    var source = $("#message-template").html();
+    var message_template = Handlebars.compile(source);
+
+    var source = $("#tab-template").html();
+    var tab_template= Handlebars.compile(source);
+
+
+    var people = {};
+    function refreshPeople() {
+      $.get(url + "/people", function(data) {
+        people = data;
+        Object.keys(people).forEach(function(phone) {
+          var name = people[phone];
+          if ($("#" + name).length==0) {
+            $("#peoples").append(tab_template({
+              name: name,
+              phone: phone
+            }));
+            $(".tab-content").append("<div class='tab-pane' id='" + name + "'></div>");
+          }
+          refreshMessages(phone);
+        });
+      });
+    }
+    refreshPeople();
+    setInterval(refreshPeople, 5000);
+    
+    function refreshMessages(to) {
+      $.get(url + "/messages", { from: to }, function(data) {
+        for(var i=0; i<data.length; i++) {
+          var message = data[i];
+          if ($("#" + message.id).length==0) {
+            message.isPapa = message.from=="+14432947272";
+
+            var person, phone;
+            if (message.isPapa) {
+              person = people[message.to];
+              message.sender = "Papa";
+              phone = message.to;
+            } else {
+              person = people[message.from];
+              message.sender = person;
+              phone = message.from;
+            }
+
+            message.person = person;
+            $("#" + person).append(message_template(message));
+            bottomOfMessage();
+          }
+        }
+        bottomOfMessage();
+      });
+    }
+
+    $("#msg-form").submit(function(e) {
+      e.preventDefault();
+      var to = $("#peoples li.active").data("phone");
+      var msg = $("#msg").val();
+      $.post(url + "/send", { to: to, content: msg }, function(data) {
+        refreshMessages(to);
+        $("#msg").val('');
+      });
+    });
+
+    function bottomOfMessage() {
+      $('#message-display').scrollTop($('#message-display')[0].scrollHeight);
+    }
+
+    $("#peoples").click(function(e) {
+      setTimeout(bottomOfMessage, 5);
+    });
+
+  </script>
+</body>
