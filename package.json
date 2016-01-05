@@ -22,7 +22,7 @@
   "devDependencies": {
     "async": "^1.5.1",
     "electron-packager": "^5.1.0",
-    "electron-prebuilt": "0.35.5",
+    "electron-prebuilt": "0.36.2",
     "lodash": "^3.10.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
