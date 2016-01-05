@@ -1,10 +1,12 @@
 <!doctype html>
 <html>
 <head>
+  <title>SMS Papa</title>
   <link href="css/styles.css" rel="stylesheet">
   <script type="text/javascript">
     window.$ = window.jQuery = require("jquery");
     window.Handlebars = require('handlebars');
+    window.moment = require('moment-timezone');
   </script>
   <script src="js/bootstrap.js"></script>
   <style>
@@ -37,11 +39,11 @@
 
   <br>
   <div class="row">
-    <div class="col-sm-3">
+    <div class="col-sm-4">
       <ul id="peoples" class="list-group">
       </ul>
     </div>
-    <div class="col-sm-7 col-sm-offset-1">
+    <div class="col-sm-7">
       <!-- Start of Correspondence -->
       <div id="message-display">
         <div class="tab-content">
@@ -72,17 +74,30 @@
       <blockquote class="{{#if isPapa}}blockquote{{else}}blockquote-reverse{{/if}}">
         <p>{{msg}}</p>
         <small>{{sender}}</small>
+        <h6 class="text-muted"><cite title="Source Title">{{formatDate time format="MMMM DD, YYYY @ hh:MM a"}}</cite></h6>
       </blockquote>
     </div>
   </script>
 
   <script id="tab-template" type="text/x-handlebars-template">
-    <li class="list-group-item" data-phone="{{phone}}">
-      <h1 href="#{{name}}" data-toggle="tab" class="list-group-item-heading">{{name}}</h1>
+    <li href="#{{name}}" data-toggle="tab" class="list-group-item" data-phone="{{phone}}">
+      <h1 class="list-group-item-heading">
+        {{name}}
+        <i class="new-message fa fa-comments-o pull-right"></i>
+      </h1>
     </li>
   </script>
 
   <script type="text/javascript">
+    Handlebars.registerHelper('formatDate', function(context, block) {
+      if (window.moment) {
+        var f = block.hash.format || "MMM DD, YYYY hh:mm:ss A";
+        return moment(context).tz('America/New_York').fromNow(); 
+        return moment(context).tz('America/New_York').format(f); 
+      } else {
+        return context;   //  moment plugin not available. return data as is.
+      };
+    });
     var url = "https://papabob.herokuapp.com";
     //var url = "http://localhost:8080";
     
@@ -107,11 +122,13 @@
             $(".tab-content").append("<div class='tab-pane' id='" + name + "'></div>");
           }
           refreshMessages(phone);
+          $('li[href$="#' + name +'"]').click();
         });
       });
     }
     refreshPeople();
     setInterval(refreshPeople, 5000);
+    setTimeout(bottomOfMessage, 500);
     
     function refreshMessages(to) {
       $.get(url + "/messages", { from: to }, function(data) {
@@ -133,10 +150,8 @@
 
             message.person = person;
             $("#" + person).append(message_template(message));
-            bottomOfMessage();
           }
         }
-        bottomOfMessage();
       });
     }
 
@@ -156,6 +171,7 @@
 
     $("#peoples").click(function(e) {
       setTimeout(bottomOfMessage, 5);
+      $(".new-message", this).remove();
     });
 
   </script>
