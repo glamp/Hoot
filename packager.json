@@ -1,0 +1,12 @@
+{
+  "osx" : {
+    "title": "sms-papa",
+    "background": "resources/background.png",
+    "icon": "resources/app.icns",
+    "icon-size": 80,
+    "contents": [
+      { "x": 542, "y": 307, "type": "link", "path": "/Applications" },
+      { "x": 101, "y": 307, "type": "file" }
+    ]
+  }
+}

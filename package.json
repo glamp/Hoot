@@ -4,9 +4,9 @@
   "appBundleId": "com.lamp.smspapa",
   "helperBundleId": "com.lamp.smspapa.helper",
   "description": "An app for sending messages to Papa",
-  "main": "main.js",
+  "main": "app/main.js",
   "scripts": {
-    "start": "electron main.js"
+    "start": "electron app/main.js"
   },
   "repository": {
     "type": "git",
