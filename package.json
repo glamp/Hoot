@@ -14,13 +14,11 @@
   },
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial"
+    "sms",
+    "papa"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
-  "homepage": "https://github.com/atom/electron-quick-start#readme",
+  "author": "Greg Lamp <lamp.greg@gmail.com"",
+  "license": "MIT",
   "devDependencies": {
     "async": "^1.5.1",
     "electron-packager": "^5.1.0",
