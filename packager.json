@@ -1,6 +1,6 @@
 {
   "osx" : {
-    "title": "sms-papa",
+    "title": "Hoot",
     "background": "resources/background.png",
     "icon": "resources/app.icns",
     "icon-size": 80,

@@ -17,7 +17,7 @@ var resPath = path.join(__dirname, '..', 'resources');
 
 // Cross platform options for electron-packager
 var packagerOptions = {
-  name: pkg.name,
+  name: pkg.productName,
   'app-version': pkg.version,
   'app-bundle-id': pkg.appBundleId,
   'helper-bundle-id': pkg.helperBundleId,

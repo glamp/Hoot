@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>SMS Papa</title>
+  <title>Hoot</title>
   <link href="css/styles.css" rel="stylesheet">
   <script type="text/javascript">
     window.$ = window.jQuery = require("jquery");
@@ -26,7 +26,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#"><i class="fa fa-envelope-o fa-2x"></i>&nbsp; ENVELOPE</a>
+        <a class="navbar-brand" href="#"><img src="img/owl.png" height="50px" /></a>
       </div>
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -130,6 +130,10 @@
     refreshPeople();
     setInterval(refreshPeople, 5000);
     setTimeout(bottomOfMessage, 500);
+
+    var ipc = require("electron").ipcRenderer;
+
+    var counts = {};
     
     function refreshMessages(to) {
       $.get(url + "/messages", { from: to }, function(data) {
@@ -151,6 +155,13 @@
 
             message.person = person;
             $("#" + person).append(message_template(message));
+            if ($("#" + person + " .active").length==0) {
+              if (message.isPapa==false) {
+                $(".new-message", this).removeClass("hide");
+                counts[person] = counts[person] + 1;
+                ipc.send('set-badge', counts);
+              }
+            }
           }
         }
       });
@@ -172,7 +183,14 @@
 
     $("#peoples").click(function(e) {
       setTimeout(bottomOfMessage, 5);
-      $(".new-message", this).remove();
+    });
+
+    $("#peoples li").click(function(e) {
+      $(".new-message", this).addClass("hide");
+      console.log($(".new-message", this))
+      var person = $(this).attr("href").replace("#", "");
+      counts[person] = 0;
+      ipc.send('set-badge', counts);
     });
 
   </script>
