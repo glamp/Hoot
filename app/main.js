@@ -64,10 +64,11 @@ app.on('ready', function() {
   checkForUpdates();
 
   ipcMain.on('set-badge', function(evt, counts) {
-    console.log(counts);
     var keys = Object.keys(counts);
-    var values = keys.map(function(v) { return myHash[v]; });
-    var n = Math.sum(values);
+    var n = 0;
+    keys.map(function(key) {
+      n += counts[key];
+    });
     if (n > 0) {
       app.dock.setBadge(n.toString());
     } else {

@@ -81,7 +81,7 @@
   </script>
 
   <script id="tab-template" type="text/x-handlebars-template">
-    <li href="#{{name}}" data-toggle="tab" class="list-group-item" data-phone="{{phone}}">
+    <li onclick="resetCount($(this));" href="#{{name}}" data-toggle="tab" class="list-group-item" data-phone="{{phone}}">
       <h1 class="list-group-item-heading">
         {{name}}
         <i class="new-message fa fa-comments-o pull-right"></i>
@@ -123,7 +123,7 @@
             $(".tab-content").append("<div class='tab-pane' id='" + name + "'></div>");
           }
           refreshMessages(phone);
-          $('li[href$="#' + name +'"]').click();
+          // $('li[href$="#' + name +'"]').click();
         });
       });
     }
@@ -157,8 +157,8 @@
             $("#" + person).append(message_template(message));
             if ($("#" + person + " .active").length==0) {
               if (message.isPapa==false) {
-                $(".new-message", this).removeClass("hide");
-                counts[person] = counts[person] + 1;
+                $('li[href$="#' + person + '"] .new-message').removeClass("hide");
+                counts[person] = (counts[person] || 0) + 1;
                 ipc.send('set-badge', counts);
               }
             }
@@ -185,13 +185,12 @@
       setTimeout(bottomOfMessage, 5);
     });
 
-    $("#peoples li").click(function(e) {
-      $(".new-message", this).addClass("hide");
-      console.log($(".new-message", this))
-      var person = $(this).attr("href").replace("#", "");
+    function resetCount(el) {
+      $(".new-message",el).addClass("hide");
+      var person = $(el).attr("href").replace("#", "");
       counts[person] = 0;
       ipc.send('set-badge', counts);
-    });
+    }
 
   </script>
 </body>
