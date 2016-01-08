@@ -31,7 +31,7 @@
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
-          <li><a onclick="refreshPeople();" href="#"><i class="fa fa-refresh"></i>&nbsp; Refresh</a></li>
+          <!-- <li><a onclick="refreshPeople();" href="#"><i class="fa fa-refresh"></i>&nbsp; Refresh</a></li> -->
         </ul>
       </div>
     </div>
@@ -100,7 +100,7 @@
       };
     });
     var url = "https://papabob.herokuapp.com";
-    //var url = "http://localhost:8080";
+    var url = "http://localhost:8080";
     
     var source = $("#message-template").html();
     var message_template = Handlebars.compile(source);
@@ -164,6 +164,7 @@
             }
           }
         }
+        bottomOfMessage();
       });
     }
 
@@ -174,6 +175,7 @@
       $.post(url + "/send", { to: to, content: msg }, function(data) {
         refreshMessages(to);
         $("#msg").val('');
+        bottomOfMessage()
       });
     });
 
